@@ -12,7 +12,6 @@
   <meta name="apple-mobile-web-app-title" content="AppToko" />
   <link rel="apple-touch-icon" href="icons/icon-192x192.png" />
 
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -21,11 +20,6 @@
           fontFamily: {
             sans: ['Plus Jakarta Sans', 'sans-serif'],
             mono: ['DM Mono', 'monospace'],
-          },
-          colors: {
-            teal: {
-              soft: '#f0fdfa',
-            }
           }
         }
       }
@@ -35,7 +29,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
   <style>
-    /* Animasi shimmer untuk loading skeleton */
     @keyframes shimmer {
       0%   { background-position: 200% 0; }
       100% { background-position: -200% 0; }
@@ -48,7 +41,13 @@
       height: 14px;
     }
 
-    /* Notifikasi */
+    /* Mode edit: highlight baris yang sedang diedit */
+    tr.editing {
+      background-color: #fefce8 !important;
+      outline: 2px solid #fbbf24;
+      outline-offset: -2px;
+    }
+
     #notifikasi { display: none; }
     #notifikasi.sukses {
       display: block;
@@ -77,7 +76,7 @@
   <!-- ── HEADER ── -->
   <header class="bg-teal-600 px-8 h-16 flex items-center justify-between sticky top-0 z-50 shadow-sm">
     <div class="flex items-center gap-3 text-white">
-      <div class="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center text-lg">🛒</div>
+      <div class="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center text-lg">🛒</div>
       <div>
         <div class="text-base font-bold tracking-tight">Aplikasi Toko</div>
         <div class="text-xs opacity-70 mt-px">Manajemen Barang</div>
@@ -101,10 +100,10 @@
         <table class="w-full border-collapse">
           <thead>
             <tr>
-              <th class="bg-teal-50 text-teal-700 text-[11px] font-bold uppercase tracking-widest px-4 py-3 text-left">ID</th>
+              <th class="bg-teal-50 text-teal-700 text-[11px] font-bold uppercase tracking-widest px-4 py-3 text-left w-12">ID</th>
               <th class="bg-teal-50 text-teal-700 text-[11px] font-bold uppercase tracking-widest px-4 py-3 text-left">Nama Barang</th>
               <th class="bg-teal-50 text-teal-700 text-[11px] font-bold uppercase tracking-widest px-4 py-3 text-right">Harga</th>
-              <th class="bg-teal-50 text-teal-700 text-[11px] font-bold uppercase tracking-widest px-4 py-3 text-center">Aksi</th>
+              <th class="bg-teal-50 text-teal-700 text-[11px] font-bold uppercase tracking-widest px-4 py-3 text-center w-36">Aksi</th>
             </tr>
           </thead>
           <tbody id="tabel-barang"></tbody>
@@ -112,16 +111,38 @@
       </div>
     </div>
 
-    <!-- Form Tambah -->
-    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden lg:sticky lg:top-20">
-      <div class="px-5 py-4 border-b border-slate-200">
-        <div class="text-sm font-bold text-slate-900">Tambah Barang</div>
-        <div class="text-xs text-slate-500 mt-0.5">Isi data lalu simpan ke database</div>
+    <!-- Form Tambah / Edit -->
+    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden lg:sticky lg:top-20 transition-all duration-300" id="form-card">
+
+      <!-- Header Form — berubah saat mode edit -->
+      <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between" id="form-header">
+        <div>
+          <div class="text-sm font-bold text-slate-900" id="form-title">Tambah Barang</div>
+          <div class="text-xs text-slate-500 mt-0.5" id="form-subtitle">Isi data lalu simpan ke database</div>
+        </div>
+        <!-- Tombol Batal Edit (tersembunyi saat mode tambah) -->
+        <button
+          id="btnBatal"
+          onclick="batalEdit()"
+          class="hidden text-xs font-semibold text-slate-500 hover:text-rose-500 bg-slate-100 hover:bg-rose-50
+                 px-3 py-1.5 rounded-lg transition-all duration-150">
+          ✕ Batal
+        </button>
       </div>
 
       <form id="formTambah" class="p-5 flex flex-col gap-4">
 
+        <!-- Input ID tersembunyi untuk mode edit -->
+        <input type="hidden" id="edit_id" value="" />
+
         <div id="notifikasi"></div>
+
+        <!-- Badge mode edit -->
+        <div id="edit-badge" class="hidden items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700
+             text-xs font-semibold px-3 py-2 rounded-xl">
+          <span class="text-base"></span>
+          <span>Mode Edit — ID: <span id="edit-id-label" class="font-mono font-bold"></span></span>
+        </div>
 
         <!-- Field Nama Barang -->
         <div>
@@ -134,7 +155,7 @@
             placeholder="contoh: Laptop Asus"
             required
             class="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm font-sans text-slate-900 bg-white
-                   placeholder:text-slate-300 outline-none transition
+                   placeholder:text-slate-300 outline-none transition-all duration-200
                    focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
           />
         </div>
@@ -155,18 +176,19 @@
               min="1"
               required
               class="w-full pl-9 pr-3 py-2.5 border-2 border-slate-200 rounded-xl text-sm font-sans text-slate-900 bg-white
-                     placeholder:text-slate-300 outline-none transition
+                     placeholder:text-slate-300 outline-none transition-all duration-200
                      focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
             />
           </div>
         </div>
 
-        <!-- Tombol Simpan -->
+        <!-- Tombol Submit — berubah saat mode edit -->
         <button
           type="submit"
           id="btnKirim"
-          class="w-full py-3 bg-amber-400 hover:bg-amber-500 active:scale-[.98] disabled:opacity-60 disabled:cursor-not-allowed
-                 text-white font-bold text-sm rounded-xl transition-all duration-200 tracking-tight"
+          class="w-full py-3 font-bold text-sm text-white rounded-xl transition-all duration-200
+                 active:scale-[.98] disabled:opacity-60 disabled:cursor-not-allowed
+                 bg-amber-400 hover:bg-amber-500"
         >
           Simpan Barang
         </button>
