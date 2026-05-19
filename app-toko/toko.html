@@ -1,0 +1,1052 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Toko Kita — Daftar Harga</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#7c3aed" />
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #7c3aed;
+            --primary-light: #a78bfa;
+            --secondary: #06b6d4;
+
+            --dark: #0f172a;
+            --dark2: #111827;
+
+            --surface: rgba(15, 23, 42, .72);
+            --surface-light: rgba(255, 255, 255, .04);
+
+            --text: #f8fafc;
+            --muted: #94a3b8;
+
+            --border: rgba(255, 255, 255, .08);
+
+            --radius: 20px;
+            --radius-sm: 14px;
+
+            --gradient:
+                linear-gradient(135deg,
+                    #7c3aed 0%,
+                    #06b6d4 100%);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background:
+                radial-gradient(circle at top left, #312e81 0%, transparent 35%),
+                radial-gradient(circle at bottom right, #0f766e 0%, transparent 30%),
+                #020617;
+
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+
+        header {
+            background: rgba(15, 23, 42, .75);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+
+            padding: 0 20px;
+        }
+
+        .header-inner {
+            max-width: 1100px;
+            margin: auto;
+
+            height: 70px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+
+            border-radius: 14px;
+
+            background: var(--gradient);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 18px;
+
+            box-shadow: 0 10px 25px rgba(124, 58, 237, .35);
+        }
+
+        .brand-name {
+            color: white;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .header-search {
+            flex: 1;
+            max-width: 380px;
+
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            background: rgba(255, 255, 255, .05);
+
+            border: 1px solid rgba(255, 255, 255, .08);
+
+            border-radius: 14px;
+
+            padding: 10px 14px;
+
+            backdrop-filter: blur(10px);
+        }
+
+        .header-search i {
+            color: #cbd5e1;
+        }
+
+        .header-search input {
+            background: none;
+            border: none;
+            outline: none;
+
+            width: 100%;
+
+            color: white;
+
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .header-search input::placeholder {
+            color: #94a3b8;
+        }
+
+        .header-badge {
+            background: rgba(124, 58, 237, .15);
+            border: 1px solid rgba(124, 58, 237, .3);
+
+            color: white;
+
+            padding: 6px 14px;
+
+            border-radius: 30px;
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* HERO */
+
+        .hero-strip {
+            background: rgba(255, 255, 255, .03);
+
+            border-bottom: 1px solid var(--border);
+
+            backdrop-filter: blur(12px);
+
+            padding: 14px 20px;
+        }
+
+        .hero-inner {
+            max-width: 1100px;
+            margin: auto;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+
+            flex-wrap: wrap;
+        }
+
+        .hero-text {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            color: #cbd5e1;
+
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* TOOLBAR */
+
+        .toolbar {
+            background: rgba(15, 23, 42, .72);
+
+            backdrop-filter: blur(14px);
+
+            border-bottom: 1px solid var(--border);
+
+            position: sticky;
+            top: 70px;
+            z-index: 90;
+
+            padding: 14px 20px;
+        }
+
+        .toolbar-inner {
+            max-width: 1100px;
+            margin: auto;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            flex-wrap: wrap;
+        }
+
+        .sort-label,
+        .count-info {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .sort-btns,
+        .view-toggle {
+            display: flex;
+            gap: 8px;
+        }
+
+        .toolbar-right {
+            margin-left: auto;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sbtn {
+            border: 1px solid rgba(255, 255, 255, .08);
+
+            background: rgba(255, 255, 255, .04);
+
+            color: #cbd5e1;
+
+            padding: 8px 15px;
+
+            border-radius: 30px;
+
+            cursor: pointer;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+
+            transition: .25s;
+        }
+
+        .sbtn:hover {
+            transform: translateY(-2px);
+            border-color: #7c3aed;
+        }
+
+        .sbtn.active {
+            background: var(--gradient);
+            color: white;
+            border: none;
+
+            box-shadow: 0 10px 20px rgba(124, 58, 237, .3);
+        }
+
+        .vbtn {
+            width: 36px;
+            height: 36px;
+
+            border-radius: 12px;
+
+            border: 1px solid rgba(255, 255, 255, .08);
+
+            background: rgba(255, 255, 255, .04);
+
+            color: #cbd5e1;
+
+            cursor: pointer;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            transition: .25s;
+        }
+
+        .vbtn.active {
+            background: var(--gradient);
+            border: none;
+            color: white;
+        }
+
+        /* CONTENT */
+
+        .content {
+            max-width: 1100px;
+            margin: auto;
+            padding: 24px;
+        }
+
+        #produk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        /* CARD */
+
+        .prod-card {
+            background: var(--surface);
+
+            border: 1px solid rgba(255, 255, 255, .08);
+
+            border-radius: 24px;
+
+            overflow: hidden;
+
+            backdrop-filter: blur(16px);
+
+            transition: .3s;
+        }
+
+        .prod-card:hover {
+            transform: translateY(-6px);
+
+            border-color: rgba(124, 58, 237, .4);
+
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, .35),
+                0 0 30px rgba(124, 58, 237, .2);
+        }
+
+        .prod-thumb {
+            height: 180px;
+
+            background:
+                linear-gradient(135deg,
+                    rgba(124, 58, 237, .18),
+                    rgba(6, 182, 212, .18));
+
+            border-bottom: 1px solid rgba(255, 255, 255, .06);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            overflow: hidden;
+        }
+
+        .prod-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+
+            transition: .3s;
+        }
+
+        .prod-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .prod-thumb-emoji {
+            font-size: 60px;
+        }
+
+        .prod-body {
+            padding: 16px;
+        }
+
+        .prod-name {
+            color: white;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            line-height: 1.5;
+
+            margin-bottom: 12px;
+        }
+
+        .prod-price-label {
+            color: #94a3b8;
+
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .prod-price {
+            color: #22d3ee;
+
+            font-family: 'DM Mono', monospace;
+
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .prod-footer {
+            margin-top: 12px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stok-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+
+            background: rgba(34, 197, 94, .12);
+
+            border: 1px solid rgba(34, 197, 94, .25);
+
+            color: #4ade80;
+
+            padding: 4px 10px;
+
+            border-radius: 30px;
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .stok-dot {
+            width: 6px;
+            height: 6px;
+
+            border-radius: 50%;
+
+            background: #4ade80;
+        }
+
+        .id-tag {
+            color: #64748b;
+
+            font-size: 11px;
+
+            font-family: 'DM Mono', monospace;
+        }
+
+        /* LIST */
+
+        #produk-list {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        #produk-list.visible {
+            display: flex;
+        }
+
+        #produk-grid.hidden {
+            display: none;
+        }
+
+        .list-item {
+            background: rgba(15, 23, 42, .72);
+
+            border: 1px solid rgba(255, 255, 255, .08);
+
+            border-radius: 18px;
+
+            padding: 14px;
+
+            display: flex;
+            align-items: center;
+            gap: 14px;
+
+            transition: .25s;
+        }
+
+        .list-item:hover {
+            transform: translateY(-2px);
+
+            border-color: rgba(124, 58, 237, .4);
+        }
+
+        .list-thumb {
+            width: 60px;
+            height: 60px;
+
+            border-radius: 14px;
+
+            overflow: hidden;
+
+            flex-shrink: 0;
+
+            background:
+                linear-gradient(135deg,
+                    rgba(124, 58, 237, .18),
+                    rgba(6, 182, 212, .18));
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .list-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .list-thumb-emoji {
+            font-size: 28px;
+        }
+
+        .list-info {
+            flex: 1;
+        }
+
+        .list-name {
+            color: white;
+
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .list-meta {
+            margin-top: 4px;
+
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+
+            color: #94a3b8;
+
+            font-size: 11px;
+        }
+
+        .list-price {
+            color: #22d3ee;
+
+            font-family: 'DM Mono', monospace;
+
+            font-size: 16px;
+        }
+
+        /* EMPTY */
+
+        .state-msg {
+            text-align: center;
+            padding: 60px 20px;
+
+            color: #94a3b8;
+        }
+
+        .state-msg i {
+            font-size: 50px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        /* LIGHTBOX */
+
+        #lightbox {
+            display: none;
+
+            position: fixed;
+            inset: 0;
+
+            background: rgba(0, 0, 0, .9);
+
+            z-index: 9999;
+
+            align-items: center;
+            justify-content: center;
+        }
+
+        #lightbox.open {
+            display: flex;
+        }
+
+        #lightbox img {
+            max-width: 90vw;
+            max-height: 88vh;
+
+            border-radius: 16px;
+        }
+
+        #lb-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+
+            width: 42px;
+            height: 42px;
+
+            border: none;
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, .1);
+
+            color: white;
+
+            cursor: pointer;
+
+            font-size: 24px;
+        }
+
+        /* FOOTER */
+
+        footer {
+            text-align: center;
+
+            padding: 30px 20px;
+
+            color: #64748b;
+
+            border-top: 1px solid rgba(255, 255, 255, .06);
+
+            margin-top: 30px;
+
+            font-size: 12px;
+        }
+
+        /* RESPONSIVE */
+
+        @media(max-width:600px) {
+
+            .header-badge,
+            .hero-strip {
+                display: none;
+            }
+
+            #produk-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .prod-thumb {
+                height: 140px;
+            }
+        }
+
+        ::selection {
+            background: #7c3aed;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- LIGHTBOX -->
+
+    <div id="lightbox" onclick="tutupLightbox()">
+        <button id="lb-close">
+            <i class="ti ti-x"></i>
+        </button>
+
+        <img id="lb-img" src="" alt="">
+    </div>
+
+    <!-- HEADER -->
+
+    <header>
+        <div class="header-inner">
+
+            <a class="brand" href="#">
+                <div class="brand-icon">🛒</div>
+                <span class="brand-name">Toko Kita</span>
+            </a>
+
+            <div class="header-search">
+                <i class="ti ti-search"></i>
+
+                <input type="text" placeholder="Cari barang..." oninput="syncSearch(this.value)">
+            </div>
+
+            <div class="header-badge" id="header-badge">
+                Memuat...
+            </div>
+
+        </div>
+    </header>
+
+    <!-- HERO -->
+
+    <div class="hero-strip">
+        <div class="hero-inner">
+
+            <div class="hero-text">
+                <i class="ti ti-checks"></i>
+                Harga transparan · Stok diperbarui
+            </div>
+
+            <div class="hero-text" id="update-time"></div>
+
+        </div>
+    </div>
+
+    <!-- TOOLBAR -->
+
+    <div class="toolbar">
+        <div class="toolbar-inner">
+
+            <span class="sort-label">Urutkan:</span>
+
+            <div class="sort-btns">
+
+                <button class="sbtn active" data-sort="default" onclick="setSort(this)">
+                    <i class="ti ti-clock"></i>
+                    Terbaru
+                </button>
+
+                <button class="sbtn" data-sort="asc" onclick="setSort(this)">
+                    <i class="ti ti-sort-ascending"></i>
+                    Termurah
+                </button>
+
+                <button class="sbtn" data-sort="desc" onclick="setSort(this)">
+                    <i class="ti ti-sort-descending"></i>
+                    Termahal
+                </button>
+
+            </div>
+
+            <div class="toolbar-right">
+
+                <span class="count-info" id="count-info"></span>
+
+                <div class="view-toggle">
+
+                    <button class="vbtn active" id="vbtn-grid" onclick="setView('grid')">
+
+                        <i class="ti ti-layout-grid"></i>
+
+                    </button>
+
+                    <button class="vbtn" id="vbtn-list" onclick="setView('list')">
+
+                        <i class="ti ti-list"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+
+    <main class="content">
+
+        <div id="produk-grid"></div>
+
+        <div id="produk-list"></div>
+
+    </main>
+
+    <footer>
+        © 2025 Toko Cinta ·
+    </footer>
+
+    <script>
+
+        const API_GET = '../api-toko/get-barang.php';
+
+        const EMOJI_MAP = ['📦'];
+
+        let semuaBarang = [];
+        let sortMode = 'default';
+        let viewMode = 'grid';
+        let queryPencarian = '';
+
+        function ambilFotoLokal(id) {
+            return localStorage.getItem(`foto_barang_${id}`) || null;
+        }
+
+        function bukaLightbox(src) {
+            document.getElementById('lb-img').src = src;
+            document.getElementById('lightbox').classList.add('open');
+        }
+
+        function tutupLightbox() {
+            document.getElementById('lightbox').classList.remove('open');
+        }
+
+        async function ambilData() {
+
+            tampilLoading();
+
+            try {
+
+                const res = await fetch(API_GET);
+
+                const hasil = await res.json();
+
+                semuaBarang = hasil.data || [];
+
+                document.getElementById('header-badge').textContent =
+                    semuaBarang.length + ' produk';
+
+                const now = new Date();
+
+                document.getElementById('update-time').textContent =
+                    'Diperbarui: ' +
+                    now.toLocaleTimeString('id-ID');
+
+                render();
+
+            } catch (err) {
+
+                tampilError(err.message);
+
+            }
+
+        }
+
+        function render() {
+
+            const q = queryPencarian.toLowerCase();
+
+            let data = semuaBarang.filter(
+                b => b.nama_barang.toLowerCase().includes(q)
+            );
+
+            if (sortMode === 'asc') {
+                data.sort((a, b) => a.harga - b.harga);
+            }
+
+            if (sortMode === 'desc') {
+                data.sort((a, b) => b.harga - a.harga);
+            }
+
+            document.getElementById('count-info').textContent =
+                `${data.length} barang`;
+
+            if (viewMode === 'grid') {
+                renderGrid(data);
+            } else {
+                renderList(data);
+            }
+
+        }
+
+        function renderGrid(data) {
+
+            const el = document.getElementById('produk-grid');
+
+            if (!data.length) {
+                el.innerHTML = `
+                    <div class="state-msg">
+                        <i class="ti ti-package-off"></i>
+                        Barang tidak ditemukan
+                    </div>
+                `;
+                return;
+            }
+
+            el.innerHTML = data.map((b, i) => {
+
+                const foto = ambilFotoLokal(b.id);
+
+                return `
+                    <div class="prod-card">
+
+                        <div class="prod-thumb">
+
+                            ${foto
+                        ? `<img src="${foto}" onclick="bukaLightbox('${foto}')">`
+                        : `<div class="prod-thumb-emoji">${EMOJI_MAP[i % EMOJI_MAP.length]}</div>`
+                    }
+
+                        </div>
+
+                        <div class="prod-body">
+
+                            <div class="prod-name">
+                                ${b.nama_barang}
+                            </div>
+
+                            <div class="prod-price-label">
+                                Harga
+                            </div>
+
+                            <div class="prod-price">
+                                Rp ${parseInt(b.harga).toLocaleString('id-ID')}
+                            </div>
+
+                            <div class="prod-footer">
+
+                                <div class="stok-badge">
+                                    <div class="stok-dot"></div>
+                                    Tersedia
+                                </div>
+
+                                <span class="id-tag">
+                                    #${b.id}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                `;
+
+            }).join('');
+
+        }
+
+        function renderList(data) {
+
+            const el = document.getElementById('produk-list');
+
+            el.innerHTML = data.map((b, i) => {
+
+                const foto = ambilFotoLokal(b.id);
+
+                return `
+                    <div class="list-item">
+
+                        <div class="list-thumb">
+
+                            ${foto
+                        ? `<img src="${foto}" onclick="bukaLightbox('${foto}')">`
+                        : `<div class="list-thumb-emoji">${EMOJI_MAP[i % EMOJI_MAP.length]}</div>`
+                    }
+
+                        </div>
+
+                        <div class="list-info">
+
+                            <div class="list-name">
+                                ${b.nama_barang}
+                            </div>
+
+                            <div class="list-meta">
+
+                                <span>#${b.id}</span>
+
+                                <div class="stok-badge">
+                                    <div class="stok-dot"></div>
+                                    Tersedia
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="list-price">
+                            Rp ${parseInt(b.harga).toLocaleString('id-ID')}
+                        </div>
+
+                    </div>
+                `;
+
+            }).join('');
+
+        }
+
+        function tampilLoading() {
+
+            document.getElementById('produk-grid').innerHTML = `
+                <div class="state-msg">
+                    <i class="ti ti-loader"></i>
+                    Memuat data...
+                </div>
+            `;
+
+        }
+
+        function tampilError(msg) {
+
+            document.getElementById('produk-grid').innerHTML = `
+                <div class="state-msg">
+                    <i class="ti ti-wifi-off"></i>
+                    ${msg}
+                </div>
+            `;
+
+        }
+
+        function setSort(el) {
+
+            document.querySelectorAll('.sbtn')
+                .forEach(b => b.classList.remove('active'));
+
+            el.classList.add('active');
+
+            sortMode = el.dataset.sort;
+
+            render();
+
+        }
+
+        function setView(mode) {
+
+            viewMode = mode;
+
+            document.getElementById('vbtn-grid')
+                .classList.toggle('active', mode === 'grid');
+
+            document.getElementById('vbtn-list')
+                .classList.toggle('active', mode === 'list');
+
+            document.getElementById('produk-grid')
+                .classList.toggle('hidden', mode !== 'grid');
+
+            document.getElementById('produk-list')
+                .classList.toggle('visible', mode === 'list');
+
+            render();
+
+        }
+
+        function syncSearch(val) {
+            queryPencarian = val;
+            render();
+        }
+
+        ambilData();
+
+    </script>
+
+</body>
+
+</html>

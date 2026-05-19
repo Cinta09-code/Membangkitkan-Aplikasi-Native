@@ -4,7 +4,7 @@
 let modeEdit = false;
 let idSedangDiedit = null;
 
-const API_BASE = "https://shintaauliapasha.infinityfreeapp.com/PBP/api-toko";
+const API_BASE = "../api-toko";
 const API_GET = `${API_BASE}/get-barang.php`;
 const API_TAMBAH = `${API_BASE}/tambah_barang.php`;
 const API_EDIT = `${API_BASE}/edit_barang.php`;
@@ -284,8 +284,8 @@ async function hapusBarang(id_target) {
 
   const yakin = confirm(
     "Peringatan!\nApakah Anda yakin ingin menghapus barang dengan ID " +
-      id_target +
-      "?",
+    id_target +
+    "?",
   );
   if (!yakin) return;
 
