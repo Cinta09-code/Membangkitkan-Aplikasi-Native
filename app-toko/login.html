@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login — Aplikasi Toko</title>
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="AppToko" />
+    <link rel="apple-touch-icon" href="./icons/icon-192x192.png" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
+    />
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --accent: #6366f1;
+        --accent-dim: #4f46e5;
+        --accent-glow: rgba(99, 102, 241, 0.18);
+        --bg: #0f172a;
+        --surface: #1e293b;
+        --surface2: #253047;
+        --border: rgba(255, 255, 255, 0.07);
+        --border-h: rgba(255, 255, 255, 0.14);
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --muted2: #64748b;
+        --success: #10b981;
+        --danger: #f43f5e;
+        --radius: 14px;
+      }
+
+      html,
+      body {
+        height: 100%;
+        font-family: "Syne", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        overflow: hidden;
+      }
+
+      /* ── Background Decoration ── */
+      .bg-dec {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 0;
+      }
+      .bg-dec::before {
+        content: "";
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(99, 102, 241, 0.12) 0%,
+          transparent 70%
+        );
+        top: -150px;
+        left: -150px;
+        animation: pulse 8s ease-in-out infinite;
+      }
+      .bg-dec::after {
+        content: "";
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(16, 185, 129, 0.08) 0%,
+          transparent 70%
+        );
+        bottom: -100px;
+        right: -100px;
+        animation: pulse 10s ease-in-out infinite reverse;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.15);
+          opacity: 0.7;
+        }
+      }
+
+      /* Grid noise overlay */
+      .bg-grid {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+          linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.015) 1px,
+            transparent 1px
+          );
+        background-size: 40px 40px;
+      }
+
+      /* ── Layout ── */
+      .wrap {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .login-card {
+        width: 100%;
+        max-width: 420px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.04),
+          0 25px 60px rgba(0, 0, 0, 0.5),
+          0 0 80px rgba(99, 102, 241, 0.07);
+        animation: slideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── Card Header ── */
+      .card-header {
+        padding: 32px 32px 24px;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(
+          135deg,
+          rgba(99, 102, 241, 0.06) 0%,
+          transparent 60%
+        );
+        text-align: center;
+      }
+
+      .brand-ring {
+        width: 64px;
+        height: 64px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, var(--accent), #8b5cf6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        margin: 0 auto 16px;
+        box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+      }
+
+      .card-title {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-bottom: 4px;
+      }
+
+      .card-sub {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      /* ── Card Body ── */
+      .card-body {
+        padding: 28px 32px 32px;
+      }
+
+      /* Error / Success banners */
+      .banner {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        animation: fadeIn 0.2s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .banner.error {
+        display: flex;
+        background: rgba(244, 63, 94, 0.1);
+        border: 1px solid rgba(244, 63, 94, 0.2);
+        color: #fb7185;
+      }
+      .banner.success {
+        display: flex;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        color: #34d399;
+      }
+
+      /* Form elements */
+      .form-group {
+        margin-bottom: 18px;
+      }
+      .form-group label {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+
+      .input-wrap {
+        position: relative;
+      }
+      .input-wrap i.prefix {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 17px;
+        color: var(--muted2);
+        pointer-events: none;
+        transition: color 0.2s;
+      }
+      .input-wrap:focus-within i.prefix {
+        color: var(--accent);
+      }
+
+      .form-input {
+        width: 100%;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 11px 12px 11px 40px;
+        font-size: 14px;
+        font-family: "Syne", sans-serif;
+        color: var(--text);
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .form-input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+      }
+      .form-input::placeholder {
+        color: var(--muted2);
+      }
+
+      /* Password toggle */
+      .toggle-pass {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--muted2);
+        cursor: pointer;
+        font-size: 17px;
+        padding: 2px;
+        transition: color 0.15s;
+      }
+      .toggle-pass:hover {
+        color: var(--muted);
+      }
+
+      /* Submit button */
+      .btn-login {
+        width: 100%;
+        height: 46px;
+        background: linear-gradient(135deg, var(--accent), #8b5cf6);
+        border: none;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+        font-family: "Syne", sans-serif;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition:
+          opacity 0.2s,
+          transform 0.15s;
+        margin-top: 8px;
+        box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+        letter-spacing: 0.2px;
+      }
+      .btn-login:hover:not(:disabled) {
+        opacity: 0.92;
+        transform: translateY(-1px);
+      }
+      .btn-login:active:not(:disabled) {
+        transform: translateY(0);
+      }
+      .btn-login:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      /* Spinner inside button */
+      .spin {
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Footer note */
+      .card-footer-note {
+        text-align: center;
+        font-size: 11.5px;
+        color: var(--muted2);
+        margin-top: 20px;
+        line-height: 1.6;
+      }
+      .card-footer-note code {
+        font-family: "JetBrains Mono", monospace;
+        background: var(--surface2);
+        padding: 1px 6px;
+        border-radius: 4px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      /* Token display after login */
+      .token-display {
+        display: none;
+        margin-top: 16px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        padding: 12px 14px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--accent);
+        word-break: break-all;
+        line-height: 1.7;
+      }
+      .token-display .token-label {
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--muted2);
+        margin-bottom: 4px;
+        font-family: "Syne", sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-dec"></div>
+    <div class="bg-grid"></div>
+
+    <div class="wrap">
+      <div class="login-card">
+        <div class="card-header">
+          <div class="brand-ring">🛒</div>
+          <div class="card-title">Aplikasi Toko</div>
+          <div class="card-sub">Masuk untuk mengakses dashboard</div>
+        </div>
+
+        <div class="card-body">
+          <!-- Banner notifikasi -->
+          <div class="banner" id="banner">
+            <i
+              class="ti ti-alert-circle"
+              style="font-size: 17px; flex-shrink: 0"
+            ></i>
+            <span id="banner-text"></span>
+          </div>
+
+          <form id="formLogin" autocomplete="on">
+            <div class="form-group">
+              <label for="username">Username</label>
+              <div class="input-wrap">
+                <i class="ti ti-user prefix"></i>
+                <input
+                  class="form-input"
+                  type="text"
+                  id="username"
+                  name="username"
+                  placeholder="Masukkan username"
+                  autocomplete="username"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password</label>
+              <div class="input-wrap">
+                <i class="ti ti-lock prefix"></i>
+                <input
+                  class="form-input"
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Masukkan password"
+                  autocomplete="current-password"
+                  required
+                />
+                <button
+                  type="button"
+                  class="toggle-pass"
+                  id="togglePass"
+                  onclick="togglePassword()"
+                >
+                  <i class="ti ti-eye" id="eyeIcon"></i>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-login" id="btnLogin">
+              <i class="ti ti-login" id="btnIcon" style="font-size: 17px"></i>
+              <span id="btnText">Masuk</span>
+            </button>
+          </form>
+
+          <!-- Token info setelah login berhasil (untuk debug) -->
+          <div class="token-display" id="tokenDisplay">
+            <div class="token-label">Bearer Token (disimpan otomatis)</div>
+            <div id="tokenVal">—</div>
+          </div>
+
+          <div class="card-footer-note">
+            Default login: <code>admin</code> / <code>admin123</code><br />
+            Ganti password setelah pertama kali masuk.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_LOGIN = "http://pbp.test/api-toko/login.php";
+      const TOKEN_KEY = "toko_auth_token";
+      const USER_KEY = "toko_auth_user";
+
+      // Jika sudah login, langsung ke dashboard
+      if (localStorage.getItem(TOKEN_KEY)) {
+        window.location.replace("./index.html");
+      }
+
+      function togglePassword() {
+        const inp = document.getElementById("password");
+        const icon = document.getElementById("eyeIcon");
+        const show = inp.type === "password";
+        inp.type = show ? "text" : "password";
+        icon.className = show ? "ti ti-eye-off" : "ti ti-eye";
+      }
+
+      function showBanner(type, msg) {
+        const el = document.getElementById("banner");
+        const txt = document.getElementById("banner-text");
+        const icon = el.querySelector("i");
+        el.className = "banner " + type;
+        txt.textContent = msg;
+        icon.className =
+          type === "error" ? "ti ti-alert-circle" : "ti ti-circle-check";
+        el.style.display = "";
+      }
+
+      function setLoading(state) {
+        const btn = document.getElementById("btnLogin");
+        const icon = document.getElementById("btnIcon");
+        const txt = document.getElementById("btnText");
+        btn.disabled = state;
+        icon.className = state ? "ti ti-loader spin" : "ti ti-login";
+        txt.textContent = state ? "Memeriksa..." : "Masuk";
+        icon.style.fontSize = "17px";
+      }
+
+      document
+        .getElementById("formLogin")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const username = document.getElementById("username").value.trim();
+          const password = document.getElementById("password").value;
+
+          if (!username || !password) {
+            showBanner("error", "Username dan password wajib diisi.");
+            return;
+          }
+
+          setLoading(true);
+
+          try {
+            const res = await fetch(API_LOGIN, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, password }),
+              cache: "no-store", // ← bypass Service Worker cache
+            });
+            const data = await res.json();
+
+            if (res.ok && data.status === "success") {
+              // Simpan token & username ke localStorage
+              // login.php mengembalikan data.token dan data.username (bukan data.user)
+              localStorage.setItem(TOKEN_KEY, data.token);
+              localStorage.setItem("toko_auth_username", data.username);
+
+              showBanner(
+                "success",
+                `Selamat datang, ${data.username}! Mengalihkan...`,
+              );
+
+              // Tampilkan token sebentar (untuk tujuan debug/pembelajaran)
+              const td = document.getElementById("tokenDisplay");
+              document.getElementById("tokenVal").textContent = data.token;
+              td.style.display = "block";
+
+              // Redirect ke dashboard setelah 1.2 detik
+              setTimeout(() => {
+                window.location.replace("./index.html");
+              }, 1200);
+            } else {
+              showBanner(
+                "error",
+                data.pesan ||
+                  data.message ||
+                  "Login gagal. Periksa kembali username dan password.",
+              );
+              setLoading(false);
+            }
+          } catch (err) {
+            showBanner(
+              "error",
+              "Tidak bisa terhubung ke server. Periksa koneksi Anda.",
+            );
+            setLoading(false);
+          }
+        });
+    </script>
+  </body>
+</html>

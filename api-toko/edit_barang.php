@@ -1,10 +1,15 @@
 <?php
 include "koneksi.php";
+include "auth.php";      // ← tambahkan ini
+
+$userLogin = cekToken($koneksi);  
+
+$authUser = requireAuth($koneksi);
 
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
@@ -12,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 $json_data = file_get_contents("php://input");
-$data      = json_decode($json_data, true);
+$data = json_decode($json_data, true);
 
 // Validasi semua field wajib ada
 if (!isset($data['id'], $data['nama_barang'], $data['harga'])) {
@@ -21,9 +26,9 @@ if (!isset($data['id'], $data['nama_barang'], $data['harga'])) {
     exit;
 }
 
-$id          = mysqli_real_escape_string($koneksi, trim($data['id']));
+$id = mysqli_real_escape_string($koneksi, trim($data['id']));
 $nama_barang = mysqli_real_escape_string($koneksi, trim($data['nama_barang']));
-$harga       = $data['harga'];
+$harga = $data['harga'];
 
 // Validasi ID
 if (empty($id) || !is_numeric($id)) {
@@ -60,16 +65,15 @@ if (!$cek || mysqli_num_rows($cek) === 0) {
 $query = "UPDATE barang SET nama_barang='$nama_barang', harga='$harga' WHERE id='$id'";
 
 if (mysqli_query($koneksi, $query)) {
-
     echo json_encode([
         "status" => "success",
-        "pesan"  => "Data barang berhasil diperbarui!"
+        "pesan" => "Data barang berhasil diperbarui!"
     ]);
 } else {
     http_response_code(500);
     echo json_encode([
         "status" => "error",
-        "pesan"  => "Gagal memperbarui data: " . mysqli_error($koneksi)
+        "pesan" => "Gagal memperbarui data: " . mysqli_error($koneksi)
     ]);
 }
 

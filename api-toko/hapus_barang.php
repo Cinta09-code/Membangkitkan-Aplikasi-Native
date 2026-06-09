@@ -1,5 +1,9 @@
 <?php
 include "koneksi.php";
+include "auth.php";      // ← tambahkan ini
+
+$userLogin = cekToken($koneksi);  
+$authUser = requireAuth($koneksi);
 
 // Menangkap kiriman JSON
 $json_data = file_get_contents("php://input");

@@ -4,11 +4,36 @@
 let modeEdit = false;
 let idSedangDiedit = null;
 
-const API_BASE = "../api-toko";
+const API_BASE = "http://pbp.test/api-toko";
 const API_GET = `${API_BASE}/get-barang.php`;
 const API_TAMBAH = `${API_BASE}/tambah_barang.php`;
 const API_EDIT = `${API_BASE}/edit_barang.php`;
 const API_HAPUS = `${API_BASE}/hapus_barang.php`;
+
+// ============================================================
+// HELPER — ambil headers dengan token otomatis
+// ============================================================
+function getAuthHeaders() {
+  const token = localStorage.getItem("toko_auth_token");
+  return {
+    "Content-Type": "application/json",
+    Authorization: "Bearer " + (token ?? ""),
+  };
+}
+
+// ============================================================
+// HELPER — tangani respons 401 (token expired/tidak valid)
+// ============================================================
+function cekUnauthorized(response) {
+  if (response.status === 401) {
+    alert("Sesi habis atau tidak valid. Silakan login ulang.");
+    localStorage.removeItem("toko_auth_token");
+    localStorage.removeItem("toko_auth_username");
+    window.location.replace("login.html");
+    return true;
+  }
+  return false;
+}
 
 // ============================================================
 // AMBIL DATA BARANG (GET)
@@ -26,8 +51,12 @@ async function ambilDataBarang() {
   `;
 
   try {
-    const response = await fetch(API_GET);
-    if (!response.ok) throw new Error("Response server: " + response.status);
+    const response = await fetch(API_GET, {
+      cache: "no-store",
+      headers: getAuthHeaders(), // ← token disertakan
+    });
+
+    if (cekUnauthorized(response)) return;
 
     const hasil = await response.json();
     if (hasil.status !== "success")
@@ -97,40 +126,70 @@ ambilDataBarang();
 // MULAI EDIT — pindahkan data dari tabel ke form
 // ============================================================
 function mulaiEdit(id, nama, harga) {
+  if (!sudahLogin()) {
+    navigasi("barang");
+
+    tampilNotifGlobal(
+      "error",
+      "❌ Gagal mengedit barang! Anda harus login terlebih dahulu.",
+    );
+    return;
+  }
+
   modeEdit = true;
   idSedangDiedit = id;
+
+  navigasi("barang");
 
   document.getElementById("edit_id").value = id;
   document.getElementById("nama_barang").value = nama;
   document.getElementById("harga").value = harga;
 
-  document.getElementById("form-title").textContent = "Edit Barang";
-  document.getElementById("form-subtitle").textContent =
-    "Ubah data lalu klik Simpan Perubahan";
+  document.getElementById("form-title-text").textContent = "Edit Barang";
 
-  const badge = document.getElementById("edit-badge");
-  badge.classList.remove("hidden");
-  badge.classList.add("flex");
+  const title = document.getElementById("form-panel-title");
+  title.className = "form-panel-title mode-edit";
+  title.querySelector("i").className = "ti ti-edit";
+
+  document.getElementById("edit-badge").classList.add("visible");
   document.getElementById("edit-id-label").textContent = id;
-  document.getElementById("btnBatal").classList.remove("hidden");
 
-  const btnKirim = document.getElementById("btnKirim");
-  btnKirim.textContent = " Simpan Perubahan";
-  btnKirim.classList.remove("bg-amber-400", "hover:bg-amber-500");
-  btnKirim.classList.add("bg-teal-500", "hover:bg-teal-600");
+  document.getElementById("btnBatal").classList.add("visible");
+
+  const btn = document.getElementById("btnKirim");
+  btn.className = "btn-submit mode-edit";
+
+  document.getElementById("btnKirim-text").textContent = "Simpan Perubahan";
 
   document
     .querySelectorAll("tr.editing")
     .forEach((tr) => tr.classList.remove("editing"));
-  const barisDiedit = document.getElementById("row-" + id);
-  if (barisDiedit) barisDiedit.classList.add("editing");
 
-  document
-    .getElementById("form-card")
-    .scrollIntoView({ behavior: "smooth", block: "start" });
-  setTimeout(() => document.getElementById("nama_barang").focus(), 400);
+  const row = document.getElementById("row-" + id);
+  if (row) row.classList.add("editing");
+
+  const existingFoto = ambilFotoLokal(id);
+  fotoBase64Aktif = existingFoto;
+  tampilFotoPreview(existingFoto);
+
+  document.getElementById("nama_barang").focus();
 }
+function tampilNotifGlobal(tipe, pesan) {
+  const notif = document.getElementById("notifikasi");
 
+  if (!notif) {
+    alert(pesan);
+    return;
+  }
+
+  notif.textContent = pesan;
+  notif.className = tipe;
+  notif.style.display = "block";
+
+  setTimeout(() => {
+    notif.style.display = "none";
+  }, 3000);
+}
 // ============================================================
 // BATAL EDIT — kembalikan form ke mode tambah
 // ============================================================
@@ -201,7 +260,6 @@ if (formTambah) {
       );
       console.error("Fetch error:", err);
     } finally {
-      // Selalu reset tombol — baik sukses, error logika, maupun error jaringan
       btnKirim.textContent = labelAwal;
       btnKirim.disabled = false;
     }
@@ -212,9 +270,12 @@ if (formTambah) {
 async function simpanTambah(nama_barang, harga, notifikasi) {
   const response = await fetch(API_TAMBAH, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    cache: "no-store",
+    headers: getAuthHeaders(), // ← token disertakan
     body: JSON.stringify({ nama_barang, harga }),
   });
+
+  if (cekUnauthorized(response)) return;
 
   const rawText = await response.text();
   let hasil;
@@ -245,9 +306,12 @@ async function simpanEdit(nama_barang, harga, notifikasi) {
 
   const response = await fetch(API_EDIT, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    cache: "no-store",
+    headers: getAuthHeaders(), // ← token disertakan
     body: JSON.stringify({ id, nama_barang, harga }),
   });
+
+  if (cekUnauthorized(response)) return;
 
   const rawText = await response.text();
   let hasil;
@@ -284,17 +348,20 @@ async function hapusBarang(id_target) {
 
   const yakin = confirm(
     "Peringatan!\nApakah Anda yakin ingin menghapus barang dengan ID " +
-    id_target +
-    "?",
+      id_target +
+      "?",
   );
   if (!yakin) return;
 
   try {
     const response = await fetch(API_HAPUS, {
       method: "DELETE",
-      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+      headers: getAuthHeaders(), // ← token disertakan
       body: JSON.stringify({ id: id_target }),
     });
+
+    if (cekUnauthorized(response)) return;
 
     const hasil = await response.json();
 
@@ -321,6 +388,15 @@ function tampilNotifikasi(el, tipe, pesan) {
     el.className = "notifikasi";
     el.style.display = "none";
   }, 4000);
+}
+
+// ============================================================
+// LOGOUT
+// ============================================================
+function logout() {
+  localStorage.removeItem("toko_auth_token");
+  localStorage.removeItem("toko_auth_username");
+  window.location.replace("login.html");
 }
 
 // ============================================================
